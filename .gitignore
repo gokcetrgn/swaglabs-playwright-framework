@@ -1,0 +1,14 @@
+# Allure
+results/allure-report/
+results/allure-results/
+
+# Playwright videos
+results/videos/
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.idea/
+.vscode/

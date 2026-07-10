@@ -1,0 +1,31 @@
+execution:
+  browsers:
+    - chromium
+    - firefox
+  parallel: true
+  workers: 2
+  retry: 1
+
+mobile:
+  enabled: false
+  device: "iPhone 13"
+
+browser:
+  headless: false
+  timeout: 10000
+  slow_mo: 0
+
+application:
+  base_url: "https://www.saucedemo.com"
+
+logging:
+  level: INFO
+  save_to_file: true
+
+report:
+  screenshot_on_fail: true
+  video: true
+  trace: false
+
+environment:
+  name: KafeinQA

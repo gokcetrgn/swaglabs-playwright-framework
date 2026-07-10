@@ -1,0 +1,4 @@
+messages:
+  firstNameReq: "Error: First Name is required"
+  lastNameReq: "Error: Last Name is required"
+  postalCodeReq: "Error: Postal Code is required"
