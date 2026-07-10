@@ -38,7 +38,7 @@ def test_login_button(app):
 
 def test_valid_login(app):
     steps = LoginSteps(app)
-    steps.login(data["invalidUser"]["username"],
+    steps.login(data["validUser"]["username"],
                 data["validUser"]["password"])
 
     steps.verify_home_page()

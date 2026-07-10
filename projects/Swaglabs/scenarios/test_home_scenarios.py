@@ -3,8 +3,8 @@ def test_home_page(home):
     home.verify_home_page()
 
 def test_navigate_with_product_photo(home):
-    home.click_product_photo()
-    home.verify_product_nav()
+    home.click_product_photo(4)
+    home.verify_product_nav(4)
 
 def test_navigate_with_product_title(home):
     home.click_product_title(4)
