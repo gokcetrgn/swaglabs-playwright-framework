@@ -38,7 +38,7 @@ A UI test automation framework for the Swag Labs demo application, developed dur
 ## Installation
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt.txt
 playwright install
 ```
 
