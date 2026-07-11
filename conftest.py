@@ -9,8 +9,10 @@ from common.login_loader import DataLoader
 from projects.Swaglabs.cases.checkout_steps import CheckoutSteps
 from projects.Swaglabs.cases.overview_steps import OverviewSteps
 
-data = DataLoader.load("data/SwagLabs/login.yml")
+config = DataLoader.load("data/SwagLabs/config.yml")
+users = DataLoader.load_json("data/SwagLabs/login_users.json")
 
+VALID_USER = next(user for user in users if user["result"] == "success")
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
@@ -33,22 +35,23 @@ def app(browser, playwright, request):
 
     yield page
 
+    failed = request.node.rep_call.failed
+
     context.close()
 
-    if request.node.rep_call.failed:
+    if failed:
         allure.attach.file(
             page.video.path(),
             name="Test Videosu",
             attachment_type=allure.attachment_type.WEBM
         )
 
-
 @pytest.fixture
 def logged_in_app(app):
     login = LoginSteps(app)
     login.login(
-        data["validUser"]["username"],
-        data["validUser"]["password"]
+        VALID_USER["username"],
+        VALID_USER["password"]
     )
     return app
 @pytest.fixture
@@ -64,7 +67,7 @@ def checkout(logged_in_app):
     return CheckoutSteps(logged_in_app)
 
 @pytest.fixture
-def overview(logged_in_app):
+def overview_page(logged_in_app):
     return OverviewSteps(logged_in_app)
 
 @pytest.fixture

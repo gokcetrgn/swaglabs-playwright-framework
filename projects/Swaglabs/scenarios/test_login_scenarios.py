@@ -1,10 +1,17 @@
 import pytest
-
 from projects.Swaglabs.cases.login_steps import LoginSteps
 
 from common.login_loader import DataLoader
 
-data = DataLoader.load("data/SwagLabs/login.yml")
+config = DataLoader.load("data/SwagLabs/config.yml")
+users = DataLoader.load_json("data/SwagLabs/login_users.json")
+
+EXPECTED_MESSAGES = {
+    "locked": config["messages"]["locked"],
+    "invalid": config["messages"]["invalid"],
+    "username_required": config["messages"]["usernameReq"],
+    "password_required": config["messages"]["passwordReq"],
+}
 
 @pytest.mark.ui
 def test_page_title(app):
@@ -36,95 +43,16 @@ def test_login_button(app):
 
     steps.verify_login_button_is_clickable()
 
-def test_valid_login(app):
+@pytest.mark.parametrize("user", users, ids=[u["name"] for u in users])
+def test_login(app, user):
     steps = LoginSteps(app)
-    steps.login(data["validUser"]["username"],
-                data["validUser"]["password"])
-
-    steps.verify_home_page()
-
-def test_problem_user_login(app):
-    steps = LoginSteps(app)
-    steps.login(data["problemUser"]["username"],
-                data["problemUser"]["password"])
-
-    steps.verify_home_page()
-
-def test_performance_user_login(app):
-    steps = LoginSteps(app)
-    steps.login(data["perfUser"]["username"],
-                data["perfUser"]["password"])
-
-    steps.verify_home_page()
-
-def test_invalid_login(app):
-    steps = LoginSteps(app)
-    steps.login(data["invalidUser"]["username"],
-                data["invalidUser"]["password"])
-
-    steps.verify_error_message(data["messages"]["invalid"])
+    steps.login(user["username"], user["password"])
 
 
-def test_locked_login(app):
-    steps = LoginSteps(app)
-    steps.login(data["lockedUser"]["username"],
-                data["lockedUser"]["password"])
-
-    steps.verify_error_message(data["messages"]["locked"])
-
-def test_login_with_enter(app):
-
-    steps = LoginSteps(app)
-
-    steps.login_page.enter_username(
-        data["validUser"]["username"]
-    )
-
-    steps.login_page.enter_password(
-        data["validUser"]["password"]
-    )
-
-    steps.login_page.press_enter()
-
-    steps.verify_home_page()
-def test_true_password_username_req(app):
-    steps = LoginSteps(app)
-    steps.login("",
-                data["validUser"]["password"])
-
-    steps.verify_error_message(data["messages"]["usernameReq"])
-
-def test_true_username_password_req(app):
-    steps = LoginSteps(app)
-    steps.login(data["validUser"]["username"],
-                "")
-
-    steps.verify_error_message(data["messages"]["passwordReq"])
-
-@pytest.mark.smoke
-def test_false_password_username_req(app):
-    steps = LoginSteps(app)
-    steps.login("",
-                data["invalidUser"]["password"])
-
-    steps.verify_error_message(data["messages"]["usernameReq"])
-
-@pytest.mark.negative
-def test_false_username_password_req(app):
-    steps = LoginSteps(app)
-    steps.login(data["invalidUser"]["username"],
-                "")
-
-    steps.verify_error_message(data["messages"]["passwordReq"])
-
-@pytest.mark.negative
-
-def test_both_username_password_req(app):
-    steps = LoginSteps(app)
-    steps.login("",
-                "")
-
-    steps.verify_error_message(data["messages"]["usernameReq"])
+    if user["result"] == "success":
+        steps.verify_home_page()
+    else:
+        steps.verify_error_message(EXPECTED_MESSAGES[user["result"]])
 
 #UI tests
 
